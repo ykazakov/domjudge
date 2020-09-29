@@ -217,6 +217,7 @@ class SubmissionController extends BaseController
             'allowDownload' => $allowDownload,
             'showSampleOutput' => $showSampleOutput,
             'runs' => $runs,
+            'showHiddenTestcaseResults' => (bool)$this->config->get('show_hidden_test_results'),
         ];
 
         if ($request->isXmlHttpRequest()) {

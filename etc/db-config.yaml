@@ -201,6 +201,11 @@
             default_value: false
             public: true
             description: Should teams be able to view a diff of their and the reference output to sample testcases?
+        -   name: show_hidden_test_results
+            type: bool
+            default_value: false
+            public: true
+            description: Should teams be able to see which hidden testcases pass or not on the team submssion page?
         -   name: show_balloons_postfreeze
             type: bool
             default_value: false

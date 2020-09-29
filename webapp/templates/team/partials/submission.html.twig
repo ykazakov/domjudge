@@ -40,7 +40,12 @@
                 <div class="p-2">
                     Result: {{ judging.result | printResult }}
                 </div>
-            </div>
+                {% if showHiddenTestcaseResults %}
+                    <div class="p-2">
+                        Hidden testcases: {{ judging.submission | testcaseResults(false,false) }}
+                    </div>
+                {% endif %}
+            </div>            
         {% endif %}
 
         {% if allowDownload %}

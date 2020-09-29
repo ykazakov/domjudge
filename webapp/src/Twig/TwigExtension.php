@@ -381,9 +381,10 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
      * Output the testcase results for the given submissions
      * @param Submission $submission
      * @param bool       $external If true, show external testcase results
+     * @param bool       $showTitle If true, show the test title
      * @return string
      */
-    public function testcaseResults(Submission $submission, bool $external = false)
+    public function testcaseResults(Submission $submission, bool $external = false, bool $showTitle = true)
     {
         // We use a direct SQL query here for performance reasons
         if ($external) {
@@ -442,6 +443,10 @@ class TwigExtension extends AbstractExtension implements GlobalsInterface
                                  Utils::specialchars($testcase['description']));
             } else {
                 $title = sprintf('Run %d', $key + 1);
+            }
+
+            if (!$showTitle) {
+                $title = $testcase['runresult'];
             }
 
             $results .= sprintf('<span class="badge badge-%s badge-testcase" title="%s">%s</span>', $class, $title,
