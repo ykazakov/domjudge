@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Form\Type\UserRegistrationType;
 use App\Service\ConfigurationService;
 use App\Service\DOMJudgeService;
+use App\Utils\Utils;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -64,6 +65,10 @@ class SecurityController extends AbstractController
             return $this->redirect($this->generateUrl('root'));
         }
 
+        if (!empty($request->server->get('REMOTE_USER'))) {
+            return $this->redirect($this->generateUrl('register'));
+        }
+
         // get the login error if there is one
         $error = $authUtils->getLastAuthenticationError();
 
@@ -114,17 +119,34 @@ class SecurityController extends AbstractController
         $selfRegistrationCategoriesCount = $em->getRepository(TeamCategory::class)->count(['allow_self_registration' => 1]);
 
         if ($selfRegistrationCategoriesCount === 0) {
-            throw new HttpException(400, "Registration not enabled");
+            $this->addFlash(
+                'danger',
+                'Registration not enabled'
+            );
+            return $this->redirect($this->generateUrl('root'));
         }
 
+        $remote_user = $request->server->get('REMOTE_USER');
+
         $user              = new User();
-        $registration_form = $this->createForm(UserRegistrationType::class, $user);
+        $user->setUsername($remote_user);
+        $user->setName($request->server->get('REMOTE_USER_NAME'));
+        $user->setEmail($request->server->get('REMOTE_EMAIL'));
+
+        $registration_form = $this->createForm(UserRegistrationType::class, $user, [
+            'external_auth' => !empty($remote_user),
+            ]);
         $registration_form->handleRequest($request);
         if ($registration_form->isSubmitted() && $registration_form->isValid()) {
             /** @var Role $team_role */
             $team_role = $em->getRepository(Role::class)->findOneBy(['dj_role' => 'team']);
 
-            $plainPass = $registration_form->get('plainPassword')->getData();
+            if (empty($remote_user)) {
+                $plainPass = $registration_form->get('plainPassword')->getData();
+            } else {
+                $plainPass = Utils::generatePassword(false);
+            }
+
             $password  = $passwordEncoder->encodePassword($user, $plainPass);
             $user->setPassword($password);
             if ($user->getName() === null) {

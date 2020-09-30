@@ -66,12 +66,16 @@ class UserRegistrationType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
+        $external_auth = $options['external_auth'];
+
         $builder
             ->add('username', TextType::class, [
                 'label' => false,
                 'attr' => [
                     'placeholder' => 'Username',
                     'autocomplete' => 'username',
+                    'readonly' => $external_auth,
                 ],
             ])
             ->add('name', TextType::class, [
@@ -80,6 +84,7 @@ class UserRegistrationType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Full name (optional)',
                     'autocomplete' => 'name',
+                    'readonly' => $external_auth,
                 ],
             ])
             ->add('email', EmailType::class, [
@@ -88,6 +93,7 @@ class UserRegistrationType extends AbstractType
                 'attr' => [
                     'placeholder' => 'Email address (optional)',
                     'autocomplete' => 'email',
+                    'readonly' => $external_auth,
                 ],
                 'constraints' => new Email(),
             ])
@@ -196,26 +202,30 @@ class UserRegistrationType extends AbstractType
                 ]);
         }
 
-        $builder
-            ->add('plainPassword', RepeatedType::class, [
-                'type' => PasswordType::class,
-                'invalid_message' => 'The password fields must match.',
-                'first_options' => [
-                    'label' => false,
-                    'attr' => [
-                        'placeholder' => 'Password',
-                        'autocomplete' => 'new-password',
+        if (!$external_auth) {
+            $builder
+                ->add('plainPassword', RepeatedType::class, [
+                    'type' => PasswordType::class,
+                    'invalid_message' => 'The password fields must match.',
+                    'first_options' => [
+                        'label' => false,
+                        'attr' => [
+                            'placeholder' => 'Password',
+                            'autocomplete' => 'new-password',
+                        ],
                     ],
-                ],
-                'second_options' => [
-                    'label' => false,
-                    'attr' => [
-                        'placeholder' => 'Repeat Password',
-                        'autocomplete' => 'new-password',
+                    'second_options' => [
+                        'label' => false,
+                        'attr' => [
+                            'placeholder' => 'Repeat Password',
+                            'autocomplete' => 'new-password',
+                        ],
                     ],
-                ],
-                'mapped' => false,
-            ])
+                    'mapped' => false,
+                ]);
+        }
+
+        $builder        
             ->add('submit', SubmitType::class, [
                 'label' => 'Register',
                 'attr' => [
@@ -298,6 +308,7 @@ class UserRegistrationType extends AbstractType
                     new Callback($validateTeam),
                     new Callback($validateAffiliation),
                 ],
+                'external_auth' => false,                
             ]
         );
     }
