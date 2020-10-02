@@ -72,6 +72,8 @@ security:
                 check_path: login
                 csrf_token_generator: security.csrf.token_manager
                 use_referer: true
+            remote_user:
+                provider: domjudge_db_provider
 
             logout:
                 path:   logout
