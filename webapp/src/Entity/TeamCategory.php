@@ -88,6 +88,17 @@ class TeamCategory extends BaseApiEntity
     private $allow_self_registration = false;
 
     /**
+     * @var int
+     * @ORM\Column(type="integer", name="max_users", length=3,
+     *     options={"comment"="Maximal number of team numbers (NULL - unlimited)",
+     *              "unsigned"=true,"default":"NULL"},
+     *     nullable=true)
+     * @Serializer\Exclude()
+     * @Assert\GreaterThan(0)
+     */
+    private $max_users;
+
+    /**
      * @ORM\OneToMany(targetEntity="Team", mappedBy="category")
      * @Serializer\Exclude()
      */
@@ -176,6 +187,37 @@ class TeamCategory extends BaseApiEntity
         return $this->allow_self_registration;
     }
 
+    /**
+     * Set maxUsers
+     *
+     * @param int $maxUsers
+     *
+     * @return TeamCategory
+     */
+    public function setMaxUsers($maxUsers)
+    {
+        $this->max_users = $maxUsers;
+
+        return $this;
+    }
+
+    /**
+     * Get maxUsers
+     *
+     * @return int
+     */
+    public function getMaxUsers()
+    {
+        return $this->max_users;
+    }
+
+    /**
+     * Add team
+     *
+     * @param \App\Entity\Team $team
+     *
+     * @return TeamCategory
+     */
     public function addTeam(Team $team): TeamCategory
     {
         $this->teams[] = $team;

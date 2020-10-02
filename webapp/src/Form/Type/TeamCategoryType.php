@@ -40,6 +40,11 @@ class TeamCategoryType extends AbstractType
                 'No' => false,
             ],
         ]);
+        $builder->add('max_users', IntegerType::class, [
+            'label' => 'The maximal number of team users',
+            'required' => false,
+            'attr' => ['placeholder' => "Unlimited"], 
+        ]);
         $builder->add('save', SubmitType::class);
     }
 

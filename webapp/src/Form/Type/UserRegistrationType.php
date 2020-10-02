@@ -117,7 +117,10 @@ class UserRegistrationType extends AbstractType
                     return $er
                         ->createQueryBuilder('t')
                         ->join('t.category', 'c')
-                        ->where('c.allow_self_registration = 1')
+                        ->where('c.allow_self_registration = 1')                        
+                        ->leftJoin('t.users', 'u')
+                        ->groupBy('t.teamid, c.max_users')
+                        ->having('c.max_users IS NULL OR count(u.userid) < c.max_users')
                         ->orderBy('t.name');
                 },
                 'attr' => [
