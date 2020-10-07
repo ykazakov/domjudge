@@ -70,7 +70,23 @@ class PublicController extends BaseController
     }
 
     /**
-     * @Route("", name="public_index")
+     * @Route("", name="public_welcome")
+     * @param Request $request
+     * @return Response
+     * @throws Exception
+     */
+    public function welcomeAction(Request $request)
+    {
+        $response   = new Response();
+        $static     = $request->query->getBoolean('static');       
+        $data = ['static' => $static];
+        return $this->render('public/welcome.html.twig',$data, $response);
+    }
+
+    /**
+     * @Route("/scoreboard", name="public_index")
+     * @param Request $request
+     * @return Response
      * @throws Exception
      */
     public function scoreboardAction(Request $request): Response
